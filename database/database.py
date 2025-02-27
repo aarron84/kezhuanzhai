@@ -6,46 +6,61 @@ LastEditTime: 2025-02-21 12:44:48
 FilePath: /kezhuanzhai/database/database.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
-from sqlalchemy import create_engine, insert
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from typing import  Type,  TypeVar,  Generic,  List,  Optional
+from sqlalchemy import create_engine, insert,  select,  update
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, Session
 from .config import DatabaseConfig
 
 
-class Base(DeclarativeBase):
+class BaseModel(DeclarativeBase):
     # __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
     pass
 
-class Database:
-    def __init__(self):    
-        self.engine = create_engine(DatabaseConfig.get_db_uri())
-        self.session = sessionmaker(bind=self.engine)
+class DatabaseSession:
+    _engine = create_engine(DatabaseConfig.get_db_uri())
+    _session_factory = sessionmaker(bind = _engine)
+    
+    @classmethod
+    def get_session(cls) -> Session:
+        return cls._session_factory()
+        
+    @classmethod
+    def init_db(cls) :
+        with cls._engine.begin() as conn:                    
+            BaseModel.metadata.create_all(conn, checkfirst=True)
+            
 
-    def get_session(self):
-        return self.session()
+T = TypeVar("T",  bound=BaseModel)
+class Database(Generic[T]):
+    def __init__(self, session,  model: Type[T]):         
+        self.model = model
+        self.session = session
+        
+    def get(self, **filters):        
+        stemt = select(self.model).filter_by(**filters)
+        result = self.session.execute(stemt)
+        return result.scalar_one_or_none()
+        
+    def get_all(self, filters)  -> Optional[T]:       
+        stemt = select(self.model).filter(filters)
+        result = self.session.execute(stemt)
+        return result.scalars().all()           
 
-    def init_db(self):
-        Base.metadata.create_all(self.engine, checkfirst=True)
 
-    def drop_db(self):
-        Base.metadata.drop_all(self.engine)
+    def add(self, obj):      
+        self.session.add(obj)
+        self.session.commit()
 
-    def add(self, obj):
-        with self.get_session() as session:
-            session.add(obj)
-            session.commit()
+    def add_all(self, objs): 
+        self.session.add_all(objs)
+        self.session.commit()
+            
+    def bulk_add(self, objs):        
+        self.session.execute(insert(self.model),  objs)
+        self.session.commit()
+        
+   
 
-    def add_all(self, objs):
-        with self.get_session() as session:
-            session.add_all(objs)
-            session.commit()
-    def bulk_add(self, model, objs):
-        with self.get_session() as session:
-            session.execute(insert(model),  objs)
-            session.commit()
-
-    def query(self, model, **kwargs):
-        with self.get_session() as session:
-            return session.query(model).filter_by(**kwargs).all()
 
         
         

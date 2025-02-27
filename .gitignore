@@ -1,6 +1,8 @@
-.eric6project/
+.eric7project/
 .ropeproject/
 .directory/
+.idea/
+.jedi/
 *.pyc
 *.pyo
 *.orig
@@ -9,5 +11,8 @@
 *~
 cur/
 tmp/
+bin/
+lib/
+lib64
 __pycache__/
 *.DS_Store

@@ -9,33 +9,21 @@ Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查�
 '''
 import akshare as ak
 from model.bondCov import BondCov
-from database import Database
-import math
-database = Database()
-database.init_db()
-bond_zh_cov_df = ak.bond_zh_cov()
-bonds = [];
-for index , row in bond_zh_cov_df.iterrows():
-    bond = BondCov(bond_code = row['债券代码'], name=row['债券简称'])
-    bond.stock_code = row['正股代码']
-    bond.stock_name = row['正股简称']
-    bond.issue_size = row['发行规模']
-#   if math.isnan(row['转股价']):
-#        bond.conversion_price  = None
-#    else:
-#        bond.conversion_price = row['转股价'] 
-        
-    bond.conversion_price = row['转股价']
-    bond.conversion_price = None if math.isnan(bond.conversion_price) else bond.conversion_price
-    if math.isnan(row['转股价']):
-        print(f'转股价={ bond.conversion_price }')
-    bond.list_date = row['上市时间']
-    bond.credit_rating = row['信用评级']
-    bonds.append(bond)
-    database.add(bond)
+from database import Database,  DatabaseSession
+from service import  BondCovService,  BondCovDailyService
+import traceback,  time
 
-#database.add_all(bonds)
-print('end')
-#print(bond_zh_cov_df)
-#comparison = ak.bond_zh_cov_info_ths()
-#print(comparison)
+
+DatabaseSession.init_db()
+with DatabaseSession.get_session() as session:    
+    bondCovService = BondCovService(session)
+    bondCovDailyService = BondCovDailyService(session)  
+    
+    bondCovs = bondCovService.getAll()
+    i = 0
+    for item in bondCovs:  
+        print(f"bond_code = {item.bond_code}")
+        bondCovDailyService.getListAndSaveFromOther(item)       
+        i+=1
+        if i % 3 == 0:
+            time.sleep(1)
