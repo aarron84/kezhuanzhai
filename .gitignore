@@ -8,11 +8,13 @@
 *.orig
 *.bak
 *.rej
+*.log*
 *~
 cur/
 tmp/
 bin/
 lib/
 lib64
+logfiles/
 __pycache__/
 *.DS_Store

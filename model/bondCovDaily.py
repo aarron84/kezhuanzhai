@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # model/bondCovDaily.py
-from sqlalchemy import Column, Integer, String, Float, Date, Boolean, ForeignKey
-from database import Database,BaseModel
-from sqlalchemy.orm import  relationship
-class BondCovDaily(BaseModel):
+from sqlalchemy import Column, Integer, String, Float, Date,  ForeignKey
+from .timeModel import  TimeModel
+
+class BondCovDaily(TimeModel):
     __tablename__ = 'bond_cov_daily'
     id = Column(Integer, primary_key=True, autoincrement=True,)
     bond_code =  Column(String(10), index=True)

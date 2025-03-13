@@ -7,17 +7,16 @@ FilePath: /kezhuanzhai/database/database.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
 from typing import  Type,  TypeVar,  Generic,  List,  Optional
-from sqlalchemy import create_engine, insert,  select,  update
-from sqlalchemy.orm import sessionmaker, DeclarativeBase, Session
+from sqlalchemy import create_engine, insert,  select,  update, func, exists
+from sqlalchemy.orm import sessionmaker, Session
 from .config import DatabaseConfig
+from .baseModel import BaseModel
 
 
-class BaseModel(DeclarativeBase):
-    # __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-    pass
+
 
 class DatabaseSession:
-    _engine = create_engine(DatabaseConfig.get_db_uri())
+    _engine = create_engine(DatabaseConfig.get_db_uri(), echo=False)
     _session_factory = sessionmaker(bind = _engine)
     
     @classmethod
@@ -36,14 +35,14 @@ class Database(Generic[T]):
         self.model = model
         self.session = session
         
-    def get(self, **filters):        
-        stemt = select(self.model).filter_by(**filters)
+    def get(self, *where):        
+        stemt = select(self.model).where(*where)  
         result = self.session.execute(stemt)
         return result.scalar_one_or_none()
         
-    def get_all(self, filters)  -> Optional[T]:       
-        stemt = select(self.model).filter(filters)
-        result = self.session.execute(stemt)
+    def get_all(self, *where )  -> Optional[T]:       
+        stemt = select(self.model).where(*where)            
+        result = self.session.execute(stemt)       
         return result.scalars().all()           
 
 
@@ -55,9 +54,37 @@ class Database(Generic[T]):
         self.session.add_all(objs)
         self.session.commit()
             
-    def bulk_add(self, objs):        
+    def bulk_add(self, objs):  
         self.session.execute(insert(self.model),  objs)
         self.session.commit()
+    
+    def update(self,  *filter,  **update_values):
+        stemt = update(self.model).where(*filter)     
+        
+        if update_values is not None:
+            stemt = stemt.values(**update_values)
+            result = self.session.execute(stemt)
+            self.session.commit()
+            return result.rowcount
+            
+        return 0
+    
+    def  getFun(self,  fun,  *filters):
+        stemt = select(fun)
+        if filters is not None:            
+            stemt = stemt.where(*filters)             
+        result = self.session.execute(stemt)        
+        return result.scalar_one_or_none()
+    
+    def  getMax(self,  column,  *filters ):
+        return self.getFun(func.max(column),  *filters)
+    
+    def exists(self, *filters) -> bool:
+        stem = select(exists().where(*filters))
+        result = self.session.execute(stem).scalar()
+        return result;
+        
+        
         
    
 

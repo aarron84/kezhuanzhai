@@ -3,16 +3,26 @@
 
 class StockExchange:
     
-    shang_hai ='sh'
-    shenzhen = 'sz'
+    exchange = {
+        "11":"sh", 
+        "12": "sz"
+    }
+    
+ 
+    
+    '''
+    通过可转债代码获取可转债所在交易所编号
+    '''
     @classmethod
     def get_StockExchange_by_bondCovCode(cls, code: str):
-        if code.startswith("11"):
-            return cls.shang_hai
-        elif code.startswith("12"):
-            return cls.shenzhen
+      
+        pre = code[0:2]
+        return cls.exchange[pre] if pre in cls.exchange else None
+
         
-        return None
+    '''
+    获取交易所编码＋可传债代码
+    '''
     @classmethod
     def get_bondCodeWithStockExchange(cls, code: str):
         exchange = cls.get_StockExchange_by_bondCovCode(code)

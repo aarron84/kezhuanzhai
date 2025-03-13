@@ -1,0 +1,64 @@
+{
+   "version":1,
+   "disable_existing_loggers":false,
+   "formatters":{      
+        "default":{
+            "format": "%(asctime)s  %(levelname)-7s|%(module)s  %(name)-25s  %(pathname)s  %(funcName)s  line: %(lineno)d  %(message)s",
+            "datefmt": "%Y-%m-%dT%H:%M:%S"
+        }
+   },
+   "handlers":{
+        "console":{
+            "class":"logging.StreamHandler",
+            "level":"DEBUG",
+            "formatter":"default"
+        },
+        "file":{
+            "class":"logging.FileHandler",
+            "level":"DEBUG",
+            "formatter":"default",
+            "filename":"root.txt",
+            "mode":"a"
+        },
+        "appFile":{
+            "class": "logging.handlers.RotatingFileHandler",
+            "level":"DEBUG",
+            "formatter":"default",
+            "filename": "logfiles/log.txt",
+            "mode":"a",
+            "maxBytes": 1048576,
+            "backupCount": 0
+           
+        },
+        "timerollFile":{
+            "class":"logging.handlers.TimedRotatingFileHandler",
+            "level":"DEBUG",
+            
+            "formatter":"default",
+            "filename": "logfiles/timelog.txt", 
+            "when":"D",        
+            "interval":1,
+            "backupCount": 10          
+              
+        }
+   },
+ 
+    "root": {
+        "level": "ERROR",
+        "handlers": ["console","file"]
+    },
+   "loggers":{     
+    
+        "app":{
+            "level":"INFO",
+            "handlers":["console","appFile"],
+            "propagate": false 
+        },
+        "sqlalchemy": {
+          "level": "ERROR",
+          "handlers": [],
+          "propagate": false
+        }
+        
+   }
+}
