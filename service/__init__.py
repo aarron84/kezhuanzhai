@@ -3,4 +3,5 @@
 from .bondCovService import BondCovService
 from .bondCovDailyService import  BondCovDailyService
 from .bondCovLeftSizeService import BondCovLeftSizeService
-from .bondCovDelisted import BondCovDelisted
+from .bondCovDelisted import BondCovDelistedService
+from .bondCovPremiumRateService import BondCovPremiumRateService

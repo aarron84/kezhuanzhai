@@ -13,7 +13,7 @@ try:
     import akshare as ak
 
     from database import Database,  DatabaseSession
-    from service import  BondCovService,  BondCovDailyService, BondCovLeftSizeService
+    from service import  BondCovService,  BondCovDailyService, BondCovLeftSizeService, BondCovPremiumRateService
     import   time
     from datetime import datetime
     import jisilu as js
@@ -27,7 +27,10 @@ try:
     def test(text,  *msg):
         print(f"text={text} msg={msg is None}")
         
-
+    class Test:
+        def __init__(self):
+            pass
+        print(f"name={__name__}, moudule={__module__}")
     #
 #    bond_zh_cov_df = ak.bond_zh_cov_info_ths()
 ##    pd.set_option('display.max_columns', None)
@@ -44,8 +47,10 @@ try:
             bondCovService = BondCovService(session)
             bondCovDailyService = BondCovDailyService(session)
             bondCovLeftSizeService = BondCovLeftSizeService(session)
+            bondCovPremiumRateService = BondCovPremiumRateService(session)
             
-            bondCovDailyService.test()
+            bondCovPremiumRateService.collectPremiumRates()
+            
             
 #            bondCovService.collectBondCov()
 #            bondCovService.updateMaturityDate()

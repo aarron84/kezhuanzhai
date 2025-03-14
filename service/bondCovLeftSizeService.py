@@ -1,8 +1,8 @@
-import sys
+
 from model import BondCovLeftSize,  BondCov
 from database import Database
 import jisilu as js
-from utils import exception_handle,  appLogger
+from utils import exception_handle
 import time
 
 class BondCovLeftSizeService:

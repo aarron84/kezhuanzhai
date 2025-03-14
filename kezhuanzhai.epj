@@ -2,7 +2,7 @@
   "header": {
     "comment": "eric project file for project kezhuanzhai",
     "copyright": "Copyright (C) 2025 , ",
-    "saved": "2025-03-12, 00:42:50"
+    "saved": "2025-03-13, 14:48:53"
   },
   "project": {
     "AUTHOR": "",
@@ -3558,10 +3558,13 @@
       "model/bondCov.py",
       "model/bondCovDaily.py",
       "model/bondCovLeftSize.py",
+      "model/bondCovPremiumRate.py",
+      "model/timeModel.py",
       "service/__init__.py",
       "service/bondCovDailyService.py",
       "service/bondCovDelisted.py",
       "service/bondCovLeftSizeService.py",
+      "service/bondCovPremiumRateService.py",
       "service/bondCovService.py",
       "task/JisiBondDelistedTask.py",
       "task/__init__.py",
